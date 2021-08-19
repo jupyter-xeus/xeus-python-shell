@@ -10,23 +10,11 @@ from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
 
 
-class XKernel():
-    def __init__(self):
-        self.comm_manager = CommManager()
-
-    def get_parent(self):
-        return get_parent_header()
-
-    @property
-    def _parent_header(self):
-        return self.get_parent()
-
-
 class XPythonShell(InteractiveShell):
     def __init__(self, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
-        self.kernel = XKernel()
+        self.kernel = None
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
