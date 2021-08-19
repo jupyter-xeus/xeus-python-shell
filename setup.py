@@ -6,7 +6,7 @@ __AUTHOR__ = 'QuantStack dev team'
 
 setup(
     name='xeus-python-shell',
-    version='0.1.0',
+    version='0.1.1',
     description='The xeus-python core python logic.',
     author=__AUTHOR__,
     maintainer=__AUTHOR__,
