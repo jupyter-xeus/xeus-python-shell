@@ -16,6 +16,7 @@ setup(
     packages=find_packages(exclude=['test']),
     python_requires='>=3.6',
     install_requires=[
+        'ipython>=7.21,<8'
     ],
     extras_require={
         'testing': ['flake8'],
