@@ -2,6 +2,7 @@ from IPython.core.compilerop import CachingCompiler
 import tempfile
 import os
 
+
 def murmur2_x86(data, seed):
     m = 0x5bd1e995
     length = len(data)
@@ -9,7 +10,7 @@ def murmur2_x86(data, seed):
     rounded_end = (length & 0xfffffffc)
     for i in range(0, rounded_end, 4):
         k = (ord(data[i]) & 0xff) | ((ord(data[i + 1]) & 0xff) << 8) | \
-           ((ord(data[i + 2]) & 0xff) << 16) | (ord(data[i + 3]) << 24)
+            ((ord(data[i + 2]) & 0xff) << 16) | (ord(data[i + 3]) << 24)
         k = (k * m) & 0xffffffff
         k ^= k >> 24
         k = (k * m) & 0xffffffff
@@ -53,6 +54,7 @@ def get_file_name(code):
         cell_name = get_tmp_directory() + '/' + str(name) + '.py'
     return cell_name
 
+
 class XCachingCompiler(CachingCompiler):
 
     def __init__(self, *args, **kwargs):
@@ -61,4 +63,3 @@ class XCachingCompiler(CachingCompiler):
 
     def get_code_name(self, raw_code, code, number):
         return get_file_name(raw_code)
-
