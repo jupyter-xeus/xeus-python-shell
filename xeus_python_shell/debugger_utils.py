@@ -1,7 +1,6 @@
 import re
 
 from IPython.core.getipython import get_ipython
-from .compiler import get_file_name
 # This import is required to have the next ones working...
 from debugpy.server import api  # noqa
 from _pydevd_bundle import pydevd_frame_utils
@@ -38,9 +37,13 @@ class VariableExplorer:
         self.frame = None
 
     def track(self):
-        var = get_ipython().user_ns
+        ip = get_ipython()
+        var = ip.user_ns
         self.frame = _FakeFrame(
-            _FakeCode('<module>', get_file_name('sys._getframe()')), var, var
+            _FakeCode(
+                '<module>', ip.compile.get_filename('sys._getframe()')
+            ),
+            var, var
         )
         self.tracker.track(
             'thread1',
