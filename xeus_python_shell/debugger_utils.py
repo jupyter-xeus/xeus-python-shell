@@ -94,7 +94,7 @@ class XDebugger:
         cond = cond and variable_name[0:2] != '_i'
         return cond
 
-    def _build_variables_response(self, request, variables):
+    def build_variables_response(self, request, variables):
         var_list = [
             var for var in variables
             if self._accept_variable(var['name'])
@@ -119,7 +119,7 @@ class XDebugger:
         self.variable_explorer = VariableExplorer()
         self.variable_explorer.track()
         variables = self.variable_explorer.get_children_variables()
-        return self._build_variables_response(message, variables)
+        return self.build_variables_response(message, variables)
 
     def variables(self, message):
         # This intentionnaly handles only the case where the code
@@ -127,4 +127,5 @@ class XDebugger:
         variables = self.variable_explorer.get_children_variables(
             message['arguments']['variablesReference']
         )
-        return self._build_variables_response(message, variables)
+        print('variables')
+        return self.build_variables_response(message, variables)
