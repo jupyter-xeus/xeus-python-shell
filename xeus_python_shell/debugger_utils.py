@@ -127,5 +127,4 @@ class XDebugger:
         variables = self.variable_explorer.get_children_variables(
             message['arguments']['variablesReference']
         )
-        print('variables')
         return self.build_variables_response(message, variables)
