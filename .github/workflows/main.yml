@@ -56,21 +56,24 @@ jobs:
 
     steps:
 
-    - name: Install Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install twine wheel build
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
 
-    - name: Build wheel
-      run: python -m build
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install twine wheel build
 
-    - name: Publish wheel
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: twine upload dist/*
+      - name: Build wheel
+        run: python -m build
+
+      - name: Publish wheel
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
