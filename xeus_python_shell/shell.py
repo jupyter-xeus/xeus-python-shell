@@ -11,6 +11,7 @@ from .display import XDisplayPublisher, XDisplayHook
 
 
 class XPythonShell(InteractiveShell):
+
     def __init__(self, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
@@ -56,6 +57,7 @@ class XPythonShell(InteractiveShell):
 
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
+
     def initialize(self, argv=None):
         super(XPythonShellApp, self).initialize(argv)
 

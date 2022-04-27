@@ -1,7 +1,5 @@
-xeus_python_shell.egg-info/*
-test/__pycache__/*
-xeus_python_shell/__pycache__/*
-xeus_python_shell/functions/__pycache__/*
+**egg-info/*
+**/__pycache__/*
 .pytest_cache/*
 build/*
 dist/*
