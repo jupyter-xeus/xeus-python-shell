@@ -1,2 +1,1 @@
-from .shell import XPythonShellApp  # noqa
-from .debugger_utils import XDebugger  # noqa
+from .shell import XPythonShell, XPythonShellApp  # noqa
