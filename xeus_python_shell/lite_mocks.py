@@ -1,6 +1,19 @@
 """Utility functions for when xeus-python is embedded in JupyterLite"""
 import sys
+import time
 import types
+
+
+def mock_time_sleep():
+    def sleep(seconds):
+        """Delay execution for a given number of seconds.  The argument may be
+        a floating point number for subsecond precision.
+        """
+        start = now = time.time()
+        while now - start < seconds:
+            now = time.time()
+
+    time.sleep = sleep
 
 
 def mock_fcntl():
@@ -37,11 +50,12 @@ def mock_tornado():
 
 
 ALL_MOCKS = [
-    mock_termios,
+    mock_time_sleep,
     mock_fcntl,
+    mock_pexpect,
     mock_resource,
-    mock_tornado,
-    mock_pexpect
+    mock_termios,
+    mock_tornado
 ]
 
 
@@ -54,5 +68,3 @@ def apply_mocks():
             mock()
         except Exception as err:
             warnings.warn("failed to apply mock", mock, err)
-
-apply_mocks()
