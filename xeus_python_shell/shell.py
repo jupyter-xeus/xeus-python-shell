@@ -5,9 +5,29 @@ from IPython.core.shellapp import InteractiveShellApp
 from IPython.core.application import BaseIPythonApplication
 from IPython.core import page, payloadpage
 from IPython.core.completer import provisionalcompleter, rectify_completions
+from IPython.core.history import HistoryManager
 
 from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
+
+# Emscripten platform needs multiple mocks to work
+if sys.platform == "emscripten":
+    from .lite_mocks import apply_mocks
+
+    apply_mocks()
+
+
+class LiteHistoryManager(HistoryManager):
+    """A disabled history manager (no database) for usage in Lite
+    """
+
+    def __init__(self, shell=None, config=None, **traits):
+        self.enabled = False
+        super(LiteHistoryManager, self).__init__(
+            shell=shell,
+            config=config,
+            **traits
+        )
 
 
 class XPythonShell(InteractiveShell):
@@ -24,6 +44,13 @@ class XPythonShell(InteractiveShell):
     def init_hooks(self):
         super(XPythonShell, self).init_hooks()
         self.set_hook('show_in_pager', page.as_hook(payloadpage.page), 99)
+
+    def init_history(self, *args, **kwargs):
+        if sys.platform == "emscripten":
+            self.history_manager = LiteHistoryManager(shell=self, parent=self)
+            self.configurables.append(self.history_manager)
+        else:
+            super(XPythonShell, self).init_history(*args, **kwargs)
 
     # Workaround for preventing IPython to show error traceback
     # in the console, we catch it and will display it later
