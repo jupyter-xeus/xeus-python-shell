@@ -1,5 +1,11 @@
 import sys
 
+# Emscripten platform needs multiple mocks to work
+if sys.platform == "emscripten":
+    from .lite_mocks import apply_mocks
+
+    apply_mocks()
+
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.shellapp import InteractiveShellApp
 from IPython.core.application import BaseIPythonApplication
@@ -9,12 +15,6 @@ from IPython.core.history import HistoryManager
 
 from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
-
-# Emscripten platform needs multiple mocks to work
-if sys.platform == "emscripten":
-    from .lite_mocks import apply_mocks
-
-    apply_mocks()
 
 
 class LiteHistoryManager(HistoryManager):
