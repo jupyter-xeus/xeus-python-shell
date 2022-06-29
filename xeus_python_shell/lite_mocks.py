@@ -3,6 +3,8 @@ import sys
 import time
 import types
 
+import xeus_python_shell.lite_webbrowser
+
 
 def mock_time_sleep():
     def sleep(seconds):
@@ -49,13 +51,18 @@ def mock_tornado():
     tornado.gen = gen
 
 
+def mock_webbrowser():
+    sys.modules["webbrowser"] = xeus_python_shell.lite_webbrowser
+
+
 ALL_MOCKS = [
     mock_time_sleep,
     mock_fcntl,
     mock_pexpect,
     mock_resource,
     mock_termios,
-    mock_tornado
+    mock_tornado,
+    mock_webbrowser,
 ]
 
 
