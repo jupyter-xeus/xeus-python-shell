@@ -38,7 +38,7 @@ jobs:
           channels: conda-forge
 
       - name: Install dependencies
-        run: mamba install ipython=7 flake8
+        run: mamba install ipython=7 black
 
       - name: Install xeus-python-shell
         run: pip install .
@@ -46,8 +46,8 @@ jobs:
       - name: Test import
         run: python -c "import xeus_python_shell"
 
-      - name: Test flake8
-        run: flake8 xeus_python_shell --ignore=E501,W504,W503
+      - name: Test black
+        run: black xeus_python_shell
 
   publish-wheels:
     runs-on: ubuntu-latest

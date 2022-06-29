@@ -18,20 +18,14 @@ from .display import XDisplayPublisher, XDisplayHook
 
 
 class LiteHistoryManager(HistoryManager):
-    """A disabled history manager (no database) for usage in Lite
-    """
+    """A disabled history manager (no database) for usage in Lite"""
 
     def __init__(self, shell=None, config=None, **traits):
         self.enabled = False
-        super(LiteHistoryManager, self).__init__(
-            shell=shell,
-            config=config,
-            **traits
-        )
+        super(LiteHistoryManager, self).__init__(shell=shell, config=config, **traits)
 
 
 class XPythonShell(InteractiveShell):
-
     def __init__(self, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
@@ -43,7 +37,7 @@ class XPythonShell(InteractiveShell):
 
     def init_hooks(self):
         super(XPythonShell, self).init_hooks()
-        self.set_hook('show_in_pager', page.as_hook(payloadpage.page), 99)
+        self.set_hook("show_in_pager", page.as_hook(payloadpage.page), 99)
 
     def init_history(self, *args, **kwargs):
         if sys.platform == "emscripten":
@@ -64,12 +58,14 @@ class XPythonShell(InteractiveShell):
 
             comps = []
             for comp in completions:
-                comps.append(dict(
-                    start=comp.start,
-                    end=comp.end,
-                    text=comp.text,
-                    type=comp.type,
-                ))
+                comps.append(
+                    dict(
+                        start=comp.start,
+                        end=comp.end,
+                        text=comp.text,
+                        type=comp.type,
+                    )
+                )
 
         if completions:
             cursor_start = completions[0].start
@@ -84,7 +80,6 @@ class XPythonShell(InteractiveShell):
 
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
-
     def initialize(self, argv=None):
         super(XPythonShellApp, self).initialize(argv)
 
@@ -106,7 +101,7 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
             display_pub_class=XDisplayPublisher,
             displayhook_class=XDisplayHook,
             compiler_class=XCachingCompiler,
-            user_ns=self.user_ns
+            user_ns=self.user_ns,
         )
 
     # Overwrite exit logic, this is not part of the kernel protocol
