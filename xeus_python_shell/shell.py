@@ -2,7 +2,7 @@ import sys
 
 # Emscripten platform needs multiple mocks to work
 if sys.platform == "emscripten":
-    from .lite_mocks import apply_mocks
+    from xeus_python_shell.lite_mocks import apply_mocks
 
     apply_mocks()
 
