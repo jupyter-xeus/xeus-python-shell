@@ -12,7 +12,7 @@ class XCachingCompiler(CachingCompiler):
         if self.get_filename is not None:
             filename = self.get_filename(raw_code)
         else:
-            filename = '<string>'
+            filename = "<string>"
 
         if self.filename_mapper is not None:
             self.filename_mapper(filename, number)

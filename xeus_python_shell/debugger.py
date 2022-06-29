@@ -1,11 +1,13 @@
 import re
 
 from IPython.core.getipython import get_ipython
+
 # This import is required to have the next ones working...
 from debugpy.server import api  # noqa
 from _pydevd_bundle import pydevd_frame_utils
 from _pydevd_bundle.pydevd_suspended_frames import (
-    SuspendedFramesManager, _FramesTracker
+    SuspendedFramesManager,
+    _FramesTracker,
 )
 
 
@@ -26,6 +28,7 @@ class _FakeFrame:
 class _DummyPyDB:
     def __init__(self):
         from _pydevd_bundle.pydevd_api import PyDevdAPI
+
         self.variable_presentation = PyDevdAPI.VariablePresentation()
 
 
@@ -40,14 +43,10 @@ class VariableExplorer:
         ip = get_ipython()
         var = ip.user_ns
         self.frame = _FakeFrame(
-            _FakeCode(
-                '<module>', ip.compile.get_filename('sys._getframe()')
-            ),
-            var, var
+            _FakeCode("<module>", ip.compile.get_filename("sys._getframe()")), var, var
         )
         self.tracker.track(
-            'thread1',
-            pydevd_frame_utils.create_frames_list_from_frame(self.frame)
+            "thread1", pydevd_frame_utils.create_frames_list_from_frame(self.frame)
         )
 
     def untrack_all(self):
@@ -62,52 +61,46 @@ class VariableExplorer:
 
 
 class XDebugger:
-
     def __init__(self):
         self.variable_explorer = VariableExplorer()
 
     def _accept_variable(self, variable_name):
         forbid_list = [
-            '__name__',
-            '__doc__',
-            '__package__',
-            '__loader__',
-            '__spec__',
-            '__annotations__',
-            '__builtins__',
-            '__builtin__',
-            '__display__',
-            'get_ipython',
-            'debugpy',
-            'exit',
-            'quit',
-            'In',
-            'Out',
-            '_oh',
-            '_dh',
-            '_',
-            '__',
-            '___'
+            "__name__",
+            "__doc__",
+            "__package__",
+            "__loader__",
+            "__spec__",
+            "__annotations__",
+            "__builtins__",
+            "__builtin__",
+            "__display__",
+            "get_ipython",
+            "debugpy",
+            "exit",
+            "quit",
+            "In",
+            "Out",
+            "_oh",
+            "_dh",
+            "_",
+            "__",
+            "___",
         ]
         cond = variable_name not in forbid_list
-        cond = cond and not bool(re.search(r'^_\d', variable_name))
-        cond = cond and variable_name[0:2] != '_i'
+        cond = cond and not bool(re.search(r"^_\d", variable_name))
+        cond = cond and variable_name[0:2] != "_i"
         return cond
 
     def build_variables_response(self, request, variables):
-        var_list = [
-            var for var in variables
-            if self._accept_variable(var['name'])
-        ]
+        var_list = [var for var in variables if self._accept_variable(var["name"])]
         reply = {
-            'seq': request['seq'],
-            'type': 'response',
-            'request_seq': request['seq'],
-            'success': True,
-            'command': request['command'],
-            'body': {
-                'variables': var_list
-            }
+            "seq": request["seq"],
+            "type": "response",
+            "request_seq": request["seq"],
+            "success": True,
+            "command": request["command"],
+            "body": {"variables": var_list},
         }
         return reply
 
@@ -125,6 +118,6 @@ class XDebugger:
         # This intentionnaly handles only the case where the code
         # did not hit a breakpoint
         variables = self.variable_explorer.get_children_variables(
-            message['arguments']['variablesReference']
+            message["arguments"]["variablesReference"]
         )
         return self.build_variables_response(message, variables)

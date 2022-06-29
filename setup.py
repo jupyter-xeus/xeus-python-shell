@@ -20,7 +20,7 @@ setup(
         'debugpy>=1.1.0,<2'
     ],
     extras_require={
-        'testing': ['flake8'],
+        'testing': ['black'],
     },
     platforms=['any'],
     classifiers=[
