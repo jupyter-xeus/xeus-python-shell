@@ -1,6 +1,9 @@
 """Utility functions for when xeus-python is embedded in JupyterLite"""
+import asyncio
+import pyjs
 import sys
 import time
+import traceback
 import types
 
 import xeus_python_shell.lite_webbrowser
@@ -55,6 +58,45 @@ def mock_webbrowser():
     sys.modules["webbrowser"] = xeus_python_shell.lite_webbrowser
 
 
+def patch_asyncio():
+    def exception_handler(event_loop,context):
+        exception = context['exception']
+        traceback.print_exception(exception)
+
+    asyncio.get_event_loop().set_exception_handler(exception_handler)
+
+    # Not doing anything if not using IPython
+    try:
+        from IPython.core.async_helpers import _AsyncIORunner
+    except ImportError:
+        return
+
+    def asyncio_call(self, coro):
+        task = asyncio.ensure_future(coro)
+
+        def py_callback(resolve, reject):
+            def done_cb(f):
+                r = f.result()
+                pyjs.js.console.log("resolving")
+                if not r.success:
+                    resolve()
+                    raise r.error_in_exec
+                else:
+                    resolve()
+            task.add_done_callback(done_cb)
+
+        raw_js_py_callback = pyjs.JsValue(py_callback)
+        js_py_callback = raw_js_py_callback['__usafe_void_val_val__'].bind(raw_js_py_callback)
+        js_promise = pyjs.js.Promise.new(js_py_callback)
+
+        pyjs.js.globalThis.toplevel_promise = js_promise
+        pyjs.js.globalThis.toplevel_promise_py_proxy = raw_js_py_callback
+
+        return task
+
+    _AsyncIORunner.__call__ = asyncio_call
+
+
 ALL_MOCKS = [
     mock_time_sleep,
     mock_fcntl,
@@ -63,6 +105,7 @@ ALL_MOCKS = [
     mock_termios,
     mock_tornado,
     mock_webbrowser,
+    patch_asyncio,
 ]
 
 
