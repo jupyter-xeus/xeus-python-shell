@@ -1,4 +1,5 @@
 import sys
+import os
 
 # Emscripten platform needs multiple mocks to work
 if sys.platform == "emscripten":
