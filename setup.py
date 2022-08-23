@@ -16,11 +16,11 @@ setup(
     packages=find_packages(exclude=['test']),
     python_requires='>=3.6',
     install_requires=[
-        'ipython>=7.21,<9',
         'debugpy>=1.1.0,<2'
     ],
     extras_require={
-        'testing': ['black'],
+        'ipython': ['ipython>=7.21,<9'],
+        'wasm': ['pyjs'],
     },
     platforms=['any'],
     classifiers=[
