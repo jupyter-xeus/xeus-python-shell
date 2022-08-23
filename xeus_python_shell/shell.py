@@ -1,4 +1,5 @@
 import sys
+import os
 
 # Emscripten platform needs multiple mocks to work
 if sys.platform == "emscripten":
@@ -89,6 +90,10 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
 
         self.init_path()
         self.init_shell()
+
+        if not os.environ.get("MPLBACKEND"):
+            os.environ["MPLBACKEND"] = "module://matplotlib_inline.backend_inline"
+        self.init_gui_pylab()
 
         self.init_extensions()
         self.init_code()
