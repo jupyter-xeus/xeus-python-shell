@@ -1,12 +1,6 @@
 import sys
 import os
 
-# Emscripten platform needs multiple mocks to work
-if sys.platform == "emscripten":
-    from xeus_python_shell.lite_mocks import apply_mocks
-
-    apply_mocks()
-
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.shellapp import InteractiveShellApp
 from IPython.core.application import BaseIPythonApplication

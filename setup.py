@@ -20,7 +20,7 @@ setup(
     ],
     extras_require={
         'ipython': ['ipython>=7.21,<9'],
-        'wasm': ['pyjs'],
+        'wasm': ['pyjs>=1.1.0,<2.0.0'],
     },
     platforms=['any'],
     classifiers=[
