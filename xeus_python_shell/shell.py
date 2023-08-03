@@ -25,6 +25,7 @@ class XPythonShell(InteractiveShell):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
         self.kernel = None
+        self.Completer.use_jedi = False
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
