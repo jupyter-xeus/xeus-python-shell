@@ -21,11 +21,11 @@ class LiteHistoryManager(HistoryManager):
 
 
 class XPythonShell(InteractiveShell):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, use_jedi, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
         self.kernel = None
-        self.Completer.use_jedi = False
+        self.Completer.use_jedi = use_jedi
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
@@ -76,7 +76,7 @@ class XPythonShell(InteractiveShell):
 
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
-    def initialize(self, argv=None):
+    def initialize(self, use_jedi, argv=None):
         super(XPythonShellApp, self).initialize(argv)
 
         self.user_ns = {}
@@ -84,7 +84,7 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
         # self.init_io() ?
 
         self.init_path()
-        self.init_shell()
+        self.init_shell(use_jedi)
 
         if not os.environ.get("MPLBACKEND"):
             os.environ["MPLBACKEND"] = "module://matplotlib_inline.backend_inline"
@@ -96,8 +96,9 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
         sys.stdout.flush()
         sys.stderr.flush()
 
-    def init_shell(self):
+    def init_shell(self, use_jedi):
         self.shell = XPythonShell.instance(
+            use_jedi,
             display_pub_class=XDisplayPublisher,
             displayhook_class=XDisplayHook,
             compiler_class=XCachingCompiler,
