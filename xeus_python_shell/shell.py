@@ -21,7 +21,7 @@ class LiteHistoryManager(HistoryManager):
 
 
 class XPythonShell(InteractiveShell):
-    def __init__(self, use_jedi, *args, **kwargs):
+    def __init__(self, use_jedi=False, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
         self.kernel = None
@@ -76,7 +76,7 @@ class XPythonShell(InteractiveShell):
 
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
-    def initialize(self, use_jedi, argv=None):
+    def initialize(self, use_jedi=False, argv=None):
         super(XPythonShellApp, self).initialize(argv)
 
         self.user_ns = {}
@@ -96,7 +96,7 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
         sys.stdout.flush()
         sys.stderr.flush()
 
-    def init_shell(self, use_jedi):
+    def init_shell(self, use_jedi=False):
         self.shell = XPythonShell.instance(
             use_jedi,
             display_pub_class=XDisplayPublisher,
