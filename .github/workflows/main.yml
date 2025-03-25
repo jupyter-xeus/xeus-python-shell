@@ -3,10 +3,10 @@ name: Tests
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
     branches:
-    - master
+    - main
   create:
       tags:
         - '*'
@@ -23,22 +23,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
-          auto-activate-base: false
-          channels: conda-forge
-
-      - name: Install dependencies
-        run: mamba install ipython=7 black
+          environment-name: test-env
+          create-args: >-
+            python=3.13
+            ipython
+            black
 
       - name: Install xeus-python-shell
         run: pip install .
@@ -57,12 +54,12 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
 
       - name: Install dependencies
         run: |

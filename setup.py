@@ -19,7 +19,7 @@ setup(
         'debugpy>=1.1.0,<2'
     ],
     extras_require={
-        'ipython': ['ipython>=7.21,<9'],
+        'ipython': ['ipython>=7.21'],
         'wasm': ['pyjs>=1.1.0,<2.0.0'],
     },
     platforms=['any'],
