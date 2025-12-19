@@ -10,7 +10,7 @@ from IPython.core.history import HistoryManager
 
 from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
-
+import asyncio
 
 class LiteHistoryManager(HistoryManager):
     """A disabled history manager (no database) for usage in Lite"""
@@ -20,12 +20,57 @@ class LiteHistoryManager(HistoryManager):
         super(LiteHistoryManager, self).__init__(shell=shell, config=config, **traits)
 
 
+
+
+class XPythonLoopRunner:
+    """A dummy loop runner for usage in XPywrapShell"""
+
+    def __init__(self):
+        self.use_lock = True
+        self.run_cell_lock = asyncio.Lock()
+
+    def __call__(self, coro, callback):
+        if self.use_lock:
+            async def wrapped(coro, callback,lock):
+                async with lock:
+                    result = await coro
+                    callback()
+                    return result
+            future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
+
+        else:
+            async def wrapped(coro, callback):
+                result = await coro
+                callback()
+                return result
+
+            future =  asyncio.get_running_loop().create_task(wrapped(coro, callback))
+
+    
+
+xeus_loop_runner = XPythonLoopRunner()
+
+
 class XPythonShell(InteractiveShell):
+
+    
+    loop_runner = xeus_loop_runner
+    loop_runner_map ={
+        'asyncio':(xeus_loop_runner, True)
+    }
+
     def __init__(self, use_jedi=False, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
+        print("XPythonShell initialized")
+
         self.kernel = None
         self.Completer.use_jedi = use_jedi
+
+    async def run_cell_async(self, *args, **kwargs):
+        print("run_cell_async called")
+        coro = super().run_cell_async(*args, **kwargs)
+        return 
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
@@ -73,6 +118,25 @@ class XPythonShell(InteractiveShell):
             matches = []
 
         return matches, cursor_start, cursor_end
+
+    def run_cell_async(self,
+        raw_cell,
+        done_callback,
+        store_history=False,
+        silent=False,
+        shell_futures=True,
+        cell_id=None,
+        ):
+        
+        future = super().run_cell_async(
+            raw_cell=raw_cell,
+            store_history=store_history,
+            silent=silent,
+            shell_futures=shell_futures,
+            cell_id=cell_id
+        )
+
+        xeus_loop_runner(future, done_callback)
 
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
