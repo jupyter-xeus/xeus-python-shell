@@ -16,7 +16,8 @@ setup(
     packages=find_packages(exclude=['test']),
     python_requires='>=3.6',
     install_requires=[
-        'debugpy>=1.1.0,<2'
+        'debugpy>=1.1.0,<2',
+        'pyodide-http'
     ],
     extras_require={
         'ipython': ['ipython>=7.21'],

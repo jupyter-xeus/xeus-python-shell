@@ -27,6 +27,11 @@ class XPythonShell(InteractiveShell):
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
+        if sys.platform == "emscripten":
+            # Apply network libraries patches
+            import pyodide_http
+            pyodide_http.patch_all()
+
     def enable_gui(self, gui=None):
         """Not implemented yet."""
         pass
