@@ -11,6 +11,17 @@ from IPython.core.history import HistoryManager
 from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
 
+try:
+    import pyodide_http
+except ImportError:
+    pyodide_http = None
+
+try:
+    import urllib3
+    from packaging.version import Version
+except ImportError:
+    urllib3 = None
+
 
 class LiteHistoryManager(HistoryManager):
     """A disabled history manager (no database) for usage in Lite"""
@@ -30,22 +41,14 @@ class XPythonShell(InteractiveShell):
         # This check should technically not be needed since patches
         # are no-op when not using that platform
         # But I feel better with this
-        if sys.platform == "emscripten":
+        if sys.platform == "emscripten" and pyodide_http is not None:
             # Apply urllib patches automatically to use js ffi
-            import pyodide_http
             pyodide_http.patch_urllib(continue_on_import_error=True)
 
-            from packaging.version import Version
-            try:
-                import urllib3
-
-                # We do not apply requests patches for urllib3 >= 2.2.0
-                # since urllib3 2.2.0 does what we need
-                if Version(urllib3.__version__) < Version('2.2.0'):
-                    pyodide_http.patch_requests(continue_on_import_error=True)
-            except ImportError:
-                # Don't care
-                pass
+            # We do not apply requests patches for urllib3 >= 2.2.0
+            # since urllib3 2.2.0 does what we need
+            if urllib3 is not None and Version(urllib3.__version__) < Version('2.2.0'):
+                pyodide_http.patch_requests(continue_on_import_error=True)
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
