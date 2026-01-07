@@ -16,13 +16,15 @@ setup(
     packages=find_packages(exclude=['test']),
     python_requires='>=3.6',
     install_requires=[
-        'debugpy>=1.1.0,<2',
-        'packaging',
-        'pyodide-http'
+        'debugpy>=1.1.0,<2'
     ],
     extras_require={
         'ipython': ['ipython>=7.21'],
-        'wasm': ['pyjs>=1.1.0,<2.0.0'],
+        'wasm': [
+            'pyjs>=1.1.0,<2.0.0',
+            'packaging',
+            'pyodide-http'
+        ],
     },
     platforms=['any'],
     classifiers=[
@@ -34,6 +36,10 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
