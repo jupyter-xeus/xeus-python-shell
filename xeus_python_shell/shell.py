@@ -27,10 +27,25 @@ class XPythonShell(InteractiveShell):
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
+        # This check should technically not be needed since patches
+        # are no-op when not using that platform
+        # But I feel better with this
         if sys.platform == "emscripten":
-            # Apply network libraries patches
+            # Apply urllib patches automatically to use js ffi
             import pyodide_http
-            pyodide_http.patch_all()
+            pyodide_http.patch_urllib(continue_on_import_error=True)
+
+            from packaging.version import Version
+            try:
+                import urllib3
+
+                # We do not apply requests patches for urllib3 >= 2.2.0
+                # since urllib3 2.2.0 does what we need
+                if Version(urllib3.__version__) < Version('2.2.0'):
+                    pyodide_http.patch_requests(continue_on_import_error=True)
+            except ImportError:
+                # Don't care
+                pass
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""

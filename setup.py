@@ -17,6 +17,7 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'debugpy>=1.1.0,<2',
+        'packaging',
         'pyodide-http'
     ],
     extras_require={
