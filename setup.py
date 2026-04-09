@@ -6,7 +6,7 @@ __AUTHOR__ = 'QuantStack dev team'
 
 setup(
     name='xeus-python-shell',
-    version='0.6.4',
+    version='0.6.6',
     description='The xeus-python core python logic.',
     author=__AUTHOR__,
     maintainer=__AUTHOR__,
@@ -20,7 +20,11 @@ setup(
     ],
     extras_require={
         'ipython': ['ipython>=7.21'],
-        'wasm': ['pyjs>=1.1.0,<2.0.0'],
+        'wasm': [
+            'pyjs>=1.1.0,<2.0.0',
+            'packaging',
+            'pyodide-http'
+        ],
     },
     platforms=['any'],
     classifiers=[
@@ -32,6 +36,10 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

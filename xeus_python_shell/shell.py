@@ -12,6 +12,18 @@ from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
 import asyncio
 
+try:
+    import pyodide_http
+except ImportError:
+    pyodide_http = None
+
+try:
+    import urllib3
+    from packaging.version import Version
+except ImportError:
+    urllib3 = None
+
+
 class LiteHistoryManager(HistoryManager):
     """A disabled history manager (no database) for usage in Lite"""
 
@@ -67,11 +79,23 @@ class XPythonShell(InteractiveShell):
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
+
+        # This check should technically not be needed since patches
+        # are no-op when not using that platform
+        # But I feel better with this
+        if sys.platform == "emscripten" and pyodide_http is not None:
+            # Apply urllib patches automatically to use js ffi
+            pyodide_http.patch_urllib(continue_on_import_error=True)
+
+            # We do not apply requests patches for urllib3 >= 2.2.0
+            # since urllib3 2.2.0 does what we need
+            if urllib3 is not None and Version(urllib3.__version__) < Version('2.2.0'):
+                pyodide_http.patch_requests(continue_on_import_error=True)
+    
     async def run_cell_async(self, *args, **kwargs):
-        print("run_cell_async called")
         coro = super().run_cell_async(*args, **kwargs)
         return 
-
+      
     def enable_gui(self, gui=None):
         """Not implemented yet."""
         pass
