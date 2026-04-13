@@ -23,28 +23,21 @@ class LiteHistoryManager(HistoryManager):
 
 
 class XPythonLoopRunner:
-    """A dummy loop runner for usage in XPywrapShell"""
+    """A dummy loop runner for usage in XPythonShell"""
 
     def __init__(self):
-        self.use_lock = True
         self.run_cell_lock = asyncio.Lock()
 
     def __call__(self, coro, callback):
-        if self.use_lock:
-            async def wrapped(coro, callback,lock):
-                async with lock:
-                    result = await coro
-                    callback()
-                    return result
-            future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
 
-        else:
-            async def wrapped(coro, callback):
+        async def wrapped(coro, callback,lock):
+            async with lock:
                 result = await coro
                 callback()
                 return result
+        future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
 
-            future =  asyncio.get_running_loop().create_task(wrapped(coro, callback))
+
 
     
 
@@ -67,10 +60,6 @@ class XPythonShell(InteractiveShell):
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
-    async def run_cell_async(self, *args, **kwargs):
-        print("run_cell_async called")
-        coro = super().run_cell_async(*args, **kwargs)
-        return 
 
     def enable_gui(self, gui=None):
         """Not implemented yet."""
