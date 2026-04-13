@@ -74,8 +74,6 @@ class XPythonShell(InteractiveShell):
     def __init__(self, use_jedi=False, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
-        print("XPythonShell initialized")
-
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
