@@ -72,8 +72,7 @@ class XPythonShell(InteractiveShell):
             # since urllib3 2.2.0 does what we need
             if urllib3 is not None and Version(urllib3.__version__) < Version('2.2.0'):
                 pyodide_http.patch_requests(continue_on_import_error=True)
-    
-      
+
     def enable_gui(self, gui=None):
         """Not implemented yet."""
         pass
