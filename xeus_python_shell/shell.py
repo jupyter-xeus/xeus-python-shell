@@ -45,7 +45,6 @@ class XPythonLoopRunner:
                 callback()
                 return result
         future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
-
             
 xeus_loop_runner = XPythonLoopRunner()
 
