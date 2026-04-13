@@ -10,6 +10,7 @@ from IPython.core.history import HistoryManager
 
 from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
+import asyncio
 
 try:
     import pyodide_http
@@ -30,8 +31,29 @@ class LiteHistoryManager(HistoryManager):
         self.enabled = False
         super(LiteHistoryManager, self).__init__(shell=shell, config=config, **traits)
 
+class XPythonLoopRunner:
+    """A dummy loop runner for usage in XPythonShell"""
+
+    def __init__(self):
+        self.run_cell_lock = asyncio.Lock()
+
+    def __call__(self, coro, callback):
+
+        async def wrapped(coro, callback,lock):
+            async with lock:
+                result = await coro
+                callback()
+                return result
+        future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
+            
+xeus_loop_runner = XPythonLoopRunner()
 
 class XPythonShell(InteractiveShell):
+    loop_runner = xeus_loop_runner
+    loop_runner_map ={
+        'asyncio':(xeus_loop_runner, True)
+    }
+
     def __init__(self, use_jedi=False, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
@@ -97,13 +119,31 @@ class XPythonShell(InteractiveShell):
 
         return matches, cursor_start, cursor_end
 
+    def run_cell_async(self,
+        raw_cell,
+        done_callback,
+        store_history=False,
+        silent=False,
+        shell_futures=True,
+        cell_id=None,
+        ):
+        
+        future = super().run_cell_async(
+            raw_cell=raw_cell,
+            store_history=store_history,
+            silent=silent,
+            shell_futures=shell_futures,
+            cell_id=cell_id
+        )
+
+        xeus_loop_runner(future, done_callback)
+
 
 class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
     def initialize(self, use_jedi=False, argv=None):
         super(XPythonShellApp, self).initialize(argv)
 
         self.user_ns = {}
-
         # self.init_io() ?
 
         self.init_path()
