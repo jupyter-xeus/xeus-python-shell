@@ -59,7 +59,6 @@ xeus_loop_runner = XPythonLoopRunner()
 
 class XPythonShell(InteractiveShell):
 
-    
     loop_runner = xeus_loop_runner
     loop_runner_map ={
         'asyncio':(xeus_loop_runner, True)
@@ -70,7 +69,6 @@ class XPythonShell(InteractiveShell):
 
         self.kernel = None
         self.Completer.use_jedi = use_jedi
-
 
         # This check should technically not be needed since patches
         # are no-op when not using that platform
@@ -160,7 +158,6 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
         super(XPythonShellApp, self).initialize(argv)
 
         self.user_ns = {}
-
         # self.init_io() ?
 
         self.init_path()
