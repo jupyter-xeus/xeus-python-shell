@@ -54,11 +54,10 @@ class XPythonLoopRunner:
                 return result
 
             future =  asyncio.get_running_loop().create_task(wrapped(coro, callback))
-
+            
 xeus_loop_runner = XPythonLoopRunner()
 
 class XPythonShell(InteractiveShell):
-
     loop_runner = xeus_loop_runner
     loop_runner_map ={
         'asyncio':(xeus_loop_runner, True)
