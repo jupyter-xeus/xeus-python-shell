@@ -31,9 +31,6 @@ class LiteHistoryManager(HistoryManager):
         self.enabled = False
         super(LiteHistoryManager, self).__init__(shell=shell, config=config, **traits)
 
-
-
-
 class XPythonLoopRunner:
     """A dummy loop runner for usage in XPywrapShell"""
 
@@ -58,10 +55,7 @@ class XPythonLoopRunner:
 
             future =  asyncio.get_running_loop().create_task(wrapped(coro, callback))
 
-    
-
 xeus_loop_runner = XPythonLoopRunner()
-
 
 class XPythonShell(InteractiveShell):
 
