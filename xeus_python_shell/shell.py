@@ -12,15 +12,24 @@ from .compiler import XCachingCompiler
 from .display import XDisplayPublisher, XDisplayHook
 import asyncio
 
+try:
+    import pyodide_http
+except ImportError:
+    pyodide_http = None
+
+try:
+    import urllib3
+    from packaging.version import Version
+except ImportError:
+    urllib3 = None
+
+
 class LiteHistoryManager(HistoryManager):
     """A disabled history manager (no database) for usage in Lite"""
 
     def __init__(self, shell=None, config=None, **traits):
         self.enabled = False
         super(LiteHistoryManager, self).__init__(shell=shell, config=config, **traits)
-
-
-
 
 class XPythonLoopRunner:
     """A dummy loop runner for usage in XPythonShell"""
@@ -37,16 +46,10 @@ class XPythonLoopRunner:
                 return result
         future =  asyncio.get_running_loop().create_task(wrapped(coro, callback, self.run_cell_lock))
 
-
-
-    
-
+            
 xeus_loop_runner = XPythonLoopRunner()
 
-
 class XPythonShell(InteractiveShell):
-
-    
     loop_runner = xeus_loop_runner
     loop_runner_map ={
         'asyncio':(xeus_loop_runner, True)
@@ -55,12 +58,22 @@ class XPythonShell(InteractiveShell):
     def __init__(self, use_jedi=False, *args, **kwargs):
         super(XPythonShell, self).__init__(*args, **kwargs)
 
-        print("XPythonShell initialized")
-
         self.kernel = None
         self.Completer.use_jedi = use_jedi
 
+        # This check should technically not be needed since patches
+        # are no-op when not using that platform
+        # But I feel better with this
+        if sys.platform == "emscripten" and pyodide_http is not None:
+            # Apply urllib patches automatically to use js ffi
+            pyodide_http.patch_urllib(continue_on_import_error=True)
 
+            # We do not apply requests patches for urllib3 >= 2.2.0
+            # since urllib3 2.2.0 does what we need
+            if urllib3 is not None and Version(urllib3.__version__) < Version('2.2.0'):
+                pyodide_http.patch_requests(continue_on_import_error=True)
+    
+      
     def enable_gui(self, gui=None):
         """Not implemented yet."""
         pass
@@ -133,7 +146,6 @@ class XPythonShellApp(BaseIPythonApplication, InteractiveShellApp):
         super(XPythonShellApp, self).initialize(argv)
 
         self.user_ns = {}
-
         # self.init_io() ?
 
         self.init_path()
