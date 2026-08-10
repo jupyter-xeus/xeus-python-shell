@@ -137,13 +137,24 @@ class XPythonShell(InteractiveShell):
         shell_futures=True,
         cell_id=None,
         ):
-        
+
+        # IPython >= 7.17 no longer transforms the cell inside run_cell_async:
+        # the caller must pass the transformed cell (and any transform error).
+        try:
+            transformed_cell = self.transform_cell(raw_cell)
+            preprocessing_exc_tuple = None
+        except Exception:
+            transformed_cell = raw_cell
+            preprocessing_exc_tuple = sys.exc_info()
+
         future = super().run_cell_async(
             raw_cell=raw_cell,
             store_history=store_history,
             silent=silent,
             shell_futures=shell_futures,
-            cell_id=cell_id
+            cell_id=cell_id,
+            transformed_cell=transformed_cell,
+            preprocessing_exc_tuple=preprocessing_exc_tuple,
         )
 
         def post_execute(result):
